@@ -15,9 +15,20 @@ jobs:
 
       - name: Run a script
         run: echo Hello from God Object
+        
+      - id: secrets
+        uses: hashicorp/vault-action@v2.1.2
+        with:
+          url: ${{ secrets.VaultHost }}:8200
+          token: ${{ secrets.VaultToken }}
+          tlsSkipVerify: true
+          secrets: |
+            /cubbyhole/god-object/deploy-action api-key | DEPLOY_API_KEY
 
       - id: foo
         uses: god-object/deploy-action@v0
+        env:
+          DEPLOY_API_KEY: ${{ steps.secrets.outputs.DEPLOY_API_KEY }}
         with:
           who-to-greet: 'Andy'
 
