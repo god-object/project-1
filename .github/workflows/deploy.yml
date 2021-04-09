@@ -19,7 +19,7 @@ jobs:
       - id: secrets
         uses: hashicorp/vault-action@v2.1.2
         with:
-          url: ${{ secrets.VaultHost }}:8200
+          url: http://${{ secrets.VaultHost }}:8200
           token: ${{ secrets.VaultToken }}
           tlsSkipVerify: true
           secrets: |
