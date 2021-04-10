@@ -32,5 +32,5 @@ jobs:
         with:
           who-to-greet: 'Andy'
 
-      - run: echo random-number ${{ steps.foo.outputs.random-number }}
+      - run: echo time ${{ steps.foo.outputs.time }}
         shell: bash
