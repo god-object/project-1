@@ -1,0 +1,38 @@
+name: God Object CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract branch name
+        id: get_branch
+        shell: bash
+        run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
+        
+      - id: secrets
+        uses: hashicorp/vault-action@v2.1.2
+        with:
+          url: http://${{ secrets.VaultHost }}:8200
+          token: ${{ secrets.VaultToken }}
+          tlsSkipVerify: true
+          secrets: |
+            /cubbyhole/god-object/deploy-action api-key | DEPLOY_API_KEY
+
+      - id: foo
+        uses: god-object/deploy-action@v0
+        env:
+          DEPLOY_API_KEY: ${{ steps.secrets.outputs.DEPLOY_API_KEY }}
+        with:
+          who-to-greet: 'Andy'
+
+      - run: echo time ${{ steps.foo.outputs.time }}
+        shell: bash
